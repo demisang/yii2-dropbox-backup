@@ -1,6 +1,6 @@
 {
     "name": "demi/dropbox-backup",
-    "description": "Yii2 wrapper for reCAPTCHA widget",
+    "description": "Yii2 console command for making site backups and upload it to your dropbox account",
     "keywords": [
         "yii2",
         "dropbox",
@@ -27,6 +27,7 @@
     "require": {
         "php": ">=5.4.0",
         "yiisoft/yii2": "*",
+        "demi/backup": "dev-master",
         "dropbox/dropbox-sdk": "1.1.*"
     },
     "autoload": {
