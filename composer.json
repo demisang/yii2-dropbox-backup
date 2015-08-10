@@ -1,0 +1,37 @@
+{
+    "name": "demi/dropbox-backup",
+    "description": "Yii2 wrapper for reCAPTCHA widget",
+    "keywords": [
+        "yii2",
+        "dropbox",
+        "backup",
+        "upload",
+        "sync",
+        "dump"
+    ],
+    "homepage": "https://github.com/demisang/yii2-dropbox-backup#readme",
+    "type": "yii2-extension",
+    "license": "GNU",
+    "authors": [
+        {
+            "name": "Ivan Orlov",
+            "email": "orlov_mail@mail.ru",
+            "homepage": "https://orlov.io/",
+            "role": "Creator"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/demisang/yii2-dropbox-backup/issues",
+        "source": "https://github.com/demisang/yii2-dropbox-backup"
+    },
+    "require": {
+        "php": ">=5.4.0",
+        "yiisoft/yii2": "*",
+        "dropbox/dropbox-sdk": "1.1.*"
+    },
+    "autoload": {
+        "psr-4": {
+            "demi\\backup\\dropbox\\": ""
+        }
+    }
+}
