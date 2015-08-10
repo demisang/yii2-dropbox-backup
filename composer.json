@@ -27,7 +27,7 @@
     "require": {
         "php": ">=5.4.0",
         "yiisoft/yii2": "*",
-        "demi/backup": "dev-master",
+        "demi/backup": "*",
         "dropbox/dropbox-sdk": "1.1.*"
     },
     "autoload": {
