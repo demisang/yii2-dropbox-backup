@@ -27,7 +27,7 @@
     "repositories": [
         {
             "type": "vcs",
-            "url": "https://github.com/demisang/dropbox-sdk-php"
+            "url": "https://github.com/demisang/dropbox-sdk"
         }
     ],
     "require": {
