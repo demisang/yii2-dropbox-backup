@@ -34,7 +34,7 @@
         "php": ">=5.4.0",
         "yiisoft/yii2": "*",
         "demi/backup": "*",
-        "dropbox/dropbox-sdk": "dev-bugfix"
+        "dropbox/dropbox-sdk": "dev-fix-64bit"
     },
     "suggest": {
         "php-64bit": "The Dropbox SDK uses 64-bit integers, this could cause problems because some of the numbers (file sizes, quota, etc) can be larger than 32-bit ints can handle. http://stackoverflow.com/a/864402"
