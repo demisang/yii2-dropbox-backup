@@ -24,18 +24,18 @@
         "issues": "https://github.com/demisang/yii2-dropbox-backup/issues",
         "source": "https://github.com/demisang/yii2-dropbox-backup"
     },
+    "require": {
+        "php": ">=5.4.0",
+        "yiisoft/yii2": "*",
+        "demi/backup": "*",
+        "dropbox/dropbox-sdk": "dev-fixes"
+    },
     "repositories": [
         {
             "type": "vcs",
             "url": "https://github.com/demisang/dropbox-sdk-php"
         }
     ],
-    "require": {
-        "php": ">=5.4.0",
-        "yiisoft/yii2": "*",
-        "demi/backup": "*",
-        "dropbox/dropbox-sdk": "1.1.*"
-    },
     "suggest": {
         "php-64bit": "The Dropbox SDK uses 64-bit integers, this could cause problems because some of the numbers (file sizes, quota, etc) can be larger than 32-bit ints can handle. http://stackoverflow.com/a/864402"
     },
