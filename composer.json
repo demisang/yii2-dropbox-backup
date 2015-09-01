@@ -26,25 +26,8 @@
     },
     "repositories": [
         {
-            "type": "package",
-            "package": {
-                "name": "dropbox/dropbox-sdk",
-                "version": "fixes",
-                "dist": {
-                    "url": "https://github.com/demisang/dropbox-sdk-php/archive/fixes.zip",
-                    "type": "zip"
-                },
-                "source": {
-                    "url": "https://github.com/demisang/dropbox-sdk-php.git",
-                    "type": "git",
-                    "reference": "dev-fixes"
-                },
-                "autoload": {
-                    "psr-0": {
-                        "Dropbox": "lib/"
-                    }
-                }
-            }
+            "type": "git",
+            "url": "https://github.com/demisang/dropbox-sdk-php.git"
         }
     ],
     "require": {
