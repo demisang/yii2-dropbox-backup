@@ -26,6 +26,11 @@
     },
     "repositories": [
         {
+            "type": "vcs",
+            "url": "https://github.com/dropbox/dropbox-sdk-php",
+            "comment": "Remove 64bit exception"
+        },
+        {
             "type": "git",
             "url": "https://github.com/demisang/dropbox-sdk-php.git"
         }
@@ -34,7 +39,7 @@
         "php": ">=5.4.0",
         "yiisoft/yii2": "*",
         "demi/backup": "*",
-        "dropbox/dropbox-sdk": "dev-fixes"
+        "dropbox/dropbox-sdk": "v1.1.8"
     },
     "suggest": {
         "php-64bit": "The Dropbox SDK uses 64-bit integers, this could cause problems because some of the numbers (file sizes, quota, etc) can be larger than 32-bit ints can handle. http://stackoverflow.com/a/864402"
