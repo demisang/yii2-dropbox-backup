@@ -27,7 +27,7 @@
     "repositories": [
         {
             "type": "vcs",
-            "url": "https://github.com/dropbox/dropbox-sdk-php",
+            "url": "https://github.com/demisang/dropbox-sdk-php",
             "comment": "Remove 64bit exception"
         },
         {
