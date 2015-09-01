@@ -24,6 +24,7 @@
         "issues": "https://github.com/demisang/yii2-dropbox-backup/issues",
         "source": "https://github.com/demisang/yii2-dropbox-backup"
     },
+    "minimum-stability": "dev",
     "repositories": [
         {
             "type": "git",
