@@ -14,7 +14,6 @@ Add to composer.json in your project
 ```
 
 # Configurations
----
 
 To get started, [configure backup component](https://github.com/demisang/yii2-backup#configurations) _(you do not need to install it)_.
 
