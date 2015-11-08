@@ -13,6 +13,19 @@ Add to composer.json in your project
 }
 ```
 
+_If you have problems with dropbox-php-sdk with non 64-bit php,
+ you should use my dropbox fix by adding this to your composer.json:_
+```json
+{
+    "repositories": [
+        {
+            "type": "git",
+            "url": "https://github.com/demisang/dropbox-sdk-php.git"
+        }
+    ],
+}
+```
+
 # Configurations
 
 To get started, [configure backup component](https://github.com/demisang/yii2-backup#configurations) _(you do not need to install it)_.
@@ -57,4 +70,5 @@ Run console command:
 php yii backup 
 ```
 
-It will generated current site backup(based on [backup component](https://github.com/demisang/yii2-backup#configurations)) and upload it to your dropbox account.
+It will generated current site backup(based on [backup component](https://github.com/demisang/yii2-backup#configurations)) 
+and upload it to your dropbox account.
