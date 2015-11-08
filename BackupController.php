@@ -31,9 +31,9 @@ class BackupController extends Controller
      * @var string
      */
     public $dropboxAccessToken;
-    /** @var string Path in the bropbox where would be saved backups */
+    /** @var string Path in the dropbox where would be saved backups */
     public $dropboxUploadPath = '/';
-    /** @var bool if TRUE: will be deleted files in the dropbox where $expiryTime has come */
+    /** @var bool if TRUE: will be deleted files in the dropbox when $expiryTime has come */
     public $autoDelete = true;
     /**
      * Number of seconds after which the file is considered deprecated and will be deleted.
