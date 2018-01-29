@@ -4,13 +4,9 @@ Yii2 console command for making site backups and upload it to your dropbox accou
 
 Installation
 ---
-Add to composer.json in your project
-```json
-{
-	"require": {
-  		"demi/dropbox-backup": "~1.0"
-	}
-}
+Run
+```code
+composer require "demi/dropbox-backup" "~1.0"
 ```
 
 _If you have problems with dropbox-php-sdk with non 64-bit php,
@@ -22,7 +18,7 @@ _If you have problems with dropbox-php-sdk with non 64-bit php,
             "type": "git",
             "url": "https://github.com/demisang/dropbox-sdk-php.git"
         }
-    ],
+    ]
 }
 ```
 

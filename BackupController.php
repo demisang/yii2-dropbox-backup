@@ -1,4 +1,10 @@
 <?php
+/**
+ * @copyright Copyright (c) 2018 Ivan Orlov
+ * @license   https://github.com/demisang/yii2-dropbox-backup/blob/master/LICENSE
+ * @link      https://github.com/demisang/yii2-dropbox-backup#readme
+ * @author    Ivan Orlov <gnasimed@gmail.com>
+ */
 
 namespace demi\backup\dropbox;
 
@@ -11,8 +17,8 @@ use \Dropbox as dbx;
 /**
  * Console command for making backup and upload them to Dropbox
  *
- * @property \demi\backup\Component $component
- * @property dbx\Client $client
+ * @property-read \demi\backup\Component $component
+ * @property-read dbx\Client $client
  */
 class BackupController extends Controller
 {
