@@ -1,25 +1,12 @@
 Yii2-dropbox-backup
 ===================
-Yii2 console command for making site backups and upload it to your dropbox account.
+Yii2 console command for making site backups and upload it to your dropbox account (Dropbox API v2).
 
 Installation
 ---
 Run
 ```code
-composer require "demi/dropbox-backup" "~1.0"
-```
-
-_If you have problems with dropbox-php-sdk with non 64-bit php,
- you should use my dropbox fix by adding this to your composer.json:_
-```json
-{
-    "repositories": [
-        {
-            "type": "git",
-            "url": "https://github.com/demisang/dropbox-sdk-php.git"
-        }
-    ]
-}
+composer require "demi/dropbox-backup" "~2.0"
 ```
 
 # Configurations
@@ -55,6 +42,7 @@ return [
             // Number of seconds after which the file is
             // considered deprecated and will be deleted.
             'expiryTime' => 30 * 86400, // 30 days
+            // @see more options here [\console\controllers\BackupController]  
         ],
     ],
 ];

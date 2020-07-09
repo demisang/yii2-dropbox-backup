@@ -1,6 +1,6 @@
 <?php
 /**
- * @copyright Copyright (c) 2018 Ivan Orlov
+ * @copyright Copyright (c) 2020 Ivan Orlov
  * @license   https://github.com/demisang/yii2-dropbox-backup/blob/master/LICENSE
  * @link      https://github.com/demisang/yii2-dropbox-backup#readme
  * @author    Ivan Orlov <gnasimed@gmail.com>
@@ -12,21 +12,33 @@ use Yii;
 use yii\helpers\Console;
 use yii\console\Controller;
 use yii\base\InvalidConfigException;
-use \Dropbox as dbx;
+use Spatie\Dropbox\Client;
 
 /**
- * Console command for making backup and upload them to Dropbox
+ * Console command for doing backup and upload them to Dropbox
  *
  * @property-read \demi\backup\Component $component
- * @property-read dbx\Client $client
+ * @property-read Client $client
  */
 class BackupController extends Controller
 {
-    /** @var string Name of \demi\backup\Component in Yii components. Default Yii::$app->backup */
+    /**
+     * Name of \demi\backup\Component in Yii components. Default Yii::$app->backup
+     *
+     * @var string
+     */
     public $backupComponent = 'backup';
-    /** @var string Dropbox app identifier. https://www.dropbox.com/developers/apps */
+    /**
+     * Dropbox app identifier. https://www.dropbox.com/developers/apps
+     *
+     * @var string
+     */
     public $dropboxAppKey;
-    /** @var string Dropbox app secret. https://www.dropbox.com/developers/apps */
+    /**
+     * Dropbox app secret. https://www.dropbox.com/developers/apps
+     *
+     * @var string
+     */
     public $dropboxAppSecret;
     /**
      * Dropbox access token for user which will be get up backups.
@@ -37,8 +49,34 @@ class BackupController extends Controller
      * @var string
      */
     public $dropboxAccessToken;
-    /** @var string Path in the dropbox where would be saved backups */
+    /**
+     * Path in the dropbox where would be saved backups
+     *
+     * @var string
+     */
     public $dropboxUploadPath = '/';
+    /**
+     * [Optional] Guzzle Client instance for "spatie/dropbox-api" Client contructor
+     * @see \Spatie\Dropbox\Client::__construct()
+     *
+     * @var \GuzzleHttp\Client
+     */
+    public $guzzleClient;
+    /**
+     * [Optional] Set max chunk size per request (determines when to switch from "one shot upload" to upload session and
+     * defines chunk size for uploads via session).
+     * @see \Spatie\Dropbox\Client::__construct()
+     *
+     * @var int
+     */
+    public $maxChunkSize = Client::MAX_CHUNK_SIZE;
+    /**
+     * [Optional] How many times to retry an upload session start or append after RequestException.
+     * @see \Spatie\Dropbox\Client::__construct()
+     *
+     * @var int
+     */
+    public $maxUploadChunkRetries = 0;
     /** @var bool if TRUE: will be deleted files in the dropbox when $expiryTime has come */
     public $autoDelete = true;
     /**
@@ -48,7 +86,12 @@ class BackupController extends Controller
      * @var int
      */
     public $expiryTime = 2592000;
-    /** @var dbx\Client Dropbox client instance */
+
+    /**
+     * Dropbox SDK Client instance
+     *
+     * @var Client
+     */
     protected $_client;
 
     /**
@@ -57,19 +100,15 @@ class BackupController extends Controller
      */
     public function init()
     {
-        if ($this->dropboxAppKey === null) {
-            throw new InvalidConfigException('You must set "\demi\dropbox\backup\BackupController::$dropboxAppKey"');
-        } elseif ($this->dropboxAppSecret === null) {
-            throw new InvalidConfigException('You must set "\demi\dropbox\backup\BackupController::$dropboxAppSecret"');
-        } elseif ($this->dropboxAccessToken === null) {
-            throw new InvalidConfigException('You must set "\demi\dropbox\backup\BackupController::$dropboxAccessToken"');
+        if ($this->dropboxAccessToken === null && ($this->dropboxAppKey === null || $this->dropboxAppSecret === null)) {
+            throw new InvalidConfigException('You must set "' . get_class($this) . '::$dropboxAccessToken" OR ($dropboxAppKey AND $dropboxAppSecret)');
         }
 
         parent::init();
     }
 
     /**
-     * Run creating new backup and save it to the Dropbox
+     * Run new backup creation and storing into Dropbox
      */
     public function actionIndex()
     {
@@ -82,17 +121,17 @@ class BackupController extends Controller
         $client = $this->client;
 
         // Read backup file
-        $f = fopen($backupFile, "rb");
+        $f = fopen($backupFile, 'rb');
         // Upload to dropbox
-        $client->uploadFile($this->dropboxUploadPath . $dropboxFile, dbx\WriteMode::add(), $f);
+        $client->upload($this->getFilePathWithDir($dropboxFile), $f);
         // Close backup file
-        fclose($f);
+        @fclose($f);
 
         $this->stdout('Backup file successfully uploaded into dropbox: ' . $dropboxFile . PHP_EOL, Console::FG_GREEN);
 
         if ($this->autoDelete) {
             // Auto removing files from dropbox that oldest of the expiry time
-            $this->actionDeleteJunk();
+            $this->actionRotateOldFiles();
         }
 
         // Cleanup server backups
@@ -101,36 +140,28 @@ class BackupController extends Controller
 
     /**
      * Removing files from dropbox that oldest of the expiry time
-     *
-     * @throws dbx\Exception_BadResponseCode
-     * @throws dbx\Exception_OverQuota
-     * @throws dbx\Exception_RetryLater
-     * @throws dbx\Exception_ServerError
      */
-    public function actionDeleteJunk()
+    public function actionRotateOldFiles()
     {
         // Get all files from dropbox backups folder
-        $folderMetadata = $this->client->getMetadataWithChildren($this->dropboxUploadPath);
-        $files = $folderMetadata['contents'];
+        $files = $this->client->listFolder($this->dropboxUploadPath);
+        $files = $files['entries'];
 
         // Calculate expired time
         $expiryDate = time() - $this->expiryTime;
 
-        foreach ($files as $key => $file) {
-            // Full path to dropbox file
-            $filepath = $file['path'];
-            // Dropbox file last modified time
-            $filetime = strtotime($file['modified']);
-
-            if (isset($file['is_dir']) && $file['is_dir']) {
-                continue;
-            } elseif (substr($filepath, -4) !== '.tar') {
-                // Check extension
+        foreach ($files as $file) {
+            // Skip non-files
+            if ($file['.tag'] !== 'file') {
                 continue;
             }
 
+            // Dropbox file last modified time
+            $filetime = strtotime($file['client_modified']);
+
+            // If time is come - delete file
             if ($filetime <= $expiryDate) {
-                // if the time has come - delete file
+                $filepath = $this->getFilePathWithDir($file['name']);
                 $this->client->delete($filepath);
                 $this->stdout('expired file was deleted from dropbox: ' . $filepath . PHP_EOL, Console::FG_YELLOW);
             }
@@ -138,17 +169,35 @@ class BackupController extends Controller
     }
 
     /**
-     * Get instance of Dropbox client
+     * Get Dropbox SDK Client
      *
-     * @return dbx\Client
+     * @return Client
      */
     public function getClient()
     {
-        if ($this->_client instanceof dbx\Client) {
+        if ($this->_client instanceof Client) {
             return $this->_client;
         }
 
-        return $this->_client = new dbx\Client($this->dropboxAccessToken, Yii::$app->name);
+        /** @noinspection ProperNullCoalescingOperatorUsageInspection As client contructor argument */
+        $access = $this->dropboxAccessToken ?? [$this->dropboxAppKey, $this->dropboxAppSecret];
+
+        return $this->_client = new Client(
+            $access, // 'accessToken' or ['appKey', 'appSecret']
+            $this->guzzleClient,
+            $this->maxChunkSize,
+            $this->maxUploadChunkRetries
+        );
+    }
+
+    /**
+     * Set Dropbox SDK Client
+     *
+     * @param Client $client
+     */
+    public function setClient(Client $client)
+    {
+        $this->_client = $client;
     }
 
     /**
@@ -159,6 +208,19 @@ class BackupController extends Controller
      */
     public function getComponent()
     {
+        /** @noinspection PhpIncompatibleReturnTypeInspection Yii always return correct class or trows Exception */
         return Yii::$app->get($this->backupComponent);
+    }
+
+    /**
+     * Return full path to file
+     *
+     * @param string $filename
+     *
+     * @return string
+     */
+    protected function getFilePathWithDir($filename)
+    {
+        return rtrim($this->dropboxUploadPath, '/\\') . '/' . $filename;
     }
 }

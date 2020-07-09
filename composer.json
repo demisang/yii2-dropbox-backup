@@ -24,13 +24,13 @@
         }
     ],
     "require": {
-        "php": ">=5.4.0",
+        "php": ">=7.0.0",
         "yiisoft/yii2": "*",
         "demi/backup": "*",
-        "dropbox/dropbox-sdk": "<=1.1.8"
+        "spatie/dropbox-api": "~1.0"
     },
     "suggest": {
-        "php-64bit": "The Dropbox SDK uses 64-bit integers, this could cause problems because some of the numbers (file sizes, quota, etc) can be larger than 32-bit ints can handle. http://stackoverflow.com/a/864402"
+        "php-64bit": "The Dropbox SDK uses 64-bit integers, this could cause problems because some of the numbers (file sizes, quota, etc) can be larger than 32-bit int. http://stackoverflow.com/a/864402"
     },
     "autoload": {
         "psr-4": {
